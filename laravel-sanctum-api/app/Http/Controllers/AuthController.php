@@ -49,9 +49,10 @@ class AuthController extends Controller
             'mobile_no' => 'required',
         ]);
 
-        $otp = rand(1000, 9999);
+        $userData = User::first('mobile_no', $request->mobile_no)->get('email');
+
+        $otp = Otp::expiry(1)->generate($request->mobile_no);
         Log::info("otp = " . $otp);
-        User::where('mobile_no', $request->mobile_no)->update(['otp' => $otp]);
 
         return response([
             'message' => "OtpSent"

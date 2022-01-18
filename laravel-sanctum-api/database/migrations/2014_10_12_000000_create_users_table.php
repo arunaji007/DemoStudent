@@ -19,8 +19,6 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('mobile_no')->unique();
             $table->date('dob');
-            $table->string('otp')->default('#@$%');
-            $table->integer('expiry_seconds')->default(30);
             $table->timestamps();
         });
     }
