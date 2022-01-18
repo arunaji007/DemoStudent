@@ -6,13 +6,8 @@ use Tzsk\Otp\Facades\Otp;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use JWTAuth;
-use Tymon\JWTAuth\Token;
-
 use Symfony\Component\HttpFoundation\Response;
 //...
 
@@ -54,7 +49,7 @@ class AuthController extends Controller
 
         $userexists = User::where('mobile_no', $request->mobile_no)->first();
 
-        Log::info($userexists);
+
         if (empty($userexists))
             return response(['message' => "Given MobileNumber or User not found"], status: Response::HTTP_NOT_FOUND);
 
@@ -92,12 +87,12 @@ class AuthController extends Controller
 
         $userOtp = $request->otp;
         $usermobile_no = $request->mobile_no;
-        $valid = Otp::match($userOtp, $usermobile_no);
-
+        $valid = Otp::check($userOtp, $usermobile_no);
+        Log::info($valid);
         if (!$valid)
             return response(['message' => "Invalid otp or Otp expired"], status: Response::HTTP_UNAUTHORIZED);
 
-        $userid = User::where('mobile_no', '=',         $request->mobile_no)->first('id');
+        $userid = User::where('mobile_no',         $request->mobile_no)->first('id');
 
         $tokenString = JWTAuth::fromUser($userid);
 
@@ -105,6 +100,4 @@ class AuthController extends Controller
 
         return response(['message' => "OtpVerified", "token" => $tokenString, 'user' => $user], status: Response::HTTP_OK);
     }
-
-    
 }
