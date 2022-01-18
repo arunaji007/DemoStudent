@@ -36,8 +36,9 @@ class AuthController extends Controller
             return response(['message' => "MobileNumber or User already registered"], status: Response::HTTP_CONFLICT);
 
         User::create($user);
+        AuthController::sendOtp($request);
         return response([
-            'message' => "Successfully registered"
+            'message' => "OTP sent"
         ], status: Response::HTTP_OK);
     }
 
@@ -53,7 +54,10 @@ class AuthController extends Controller
         if (empty($userexists))
             return response(['message' => "Given MobileNumber or User not found"], status: Response::HTTP_NOT_FOUND);
 
-        return response(['message' => 'Successfully otp sent'], status: Response::HTTP_OK);
+        AuthController::sendOtp($request);
+        return response([
+            'message' => "OtpSent"
+        ], status: Response::HTTP_OK);
     }
 
     public function get_user(Request $request)
@@ -66,7 +70,7 @@ class AuthController extends Controller
         ], status: Response::HTTP_OK);
     }
 
-    public function sendOtp(Request $request)
+    public static function sendOtp(Request $request)
     {
         $request->validate([
             'mobile_no' => 'required',
@@ -88,9 +92,9 @@ class AuthController extends Controller
         $userOtp = $request->otp;
         $usermobile_no = $request->mobile_no;
         $valid = Otp::check($userOtp, $usermobile_no);
-        Log::info($valid);
+        
         if (!$valid)
-            return response(['message' => "Invalid otp or Otp expired"], status: Response::HTTP_UNAUTHORIZED);
+            return response(['message' => "Invalid otp or Otp expired"], status: Response::HTTP_FORBIDDEN);
 
         $userid = User::where('mobile_no',         $request->mobile_no)->first('id');
 

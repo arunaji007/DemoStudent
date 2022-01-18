@@ -34,4 +34,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+    public function board()
+    {
+        return $this->hasOne(Board::class);
+    }
+    public function grade()
+    {
+        return $this->hasOne(Grade::class);
+    }
 }

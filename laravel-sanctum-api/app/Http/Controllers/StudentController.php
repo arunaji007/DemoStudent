@@ -29,11 +29,7 @@ class StudentController extends Controller
     }
     public function getGrades(Request $request)
     {
-        $request->validate([
-            "boardId" => "required",
-        ]);
         $grades = Grade::where('boardId', $request->boardId)->get();
-        Log::info($this->user);
         return response(["grades" => $grades], status: Response::HTTP_OK);
     }
     public function updateUser(Request $request)
