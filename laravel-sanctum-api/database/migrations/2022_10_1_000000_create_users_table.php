@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->foreignId('boardId')->nullable()->constrained('boards');
             $table->foreignId('gradeId')->nullable()->constrained('grades');
         });
+        DB::statement("ALTER TABLE users AUTO_INCREMENT = 10000;");
     }
 
     /**

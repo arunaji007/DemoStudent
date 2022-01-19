@@ -26,7 +26,11 @@ Route::post('/v1/verify-otp', [AuthController::class, 'verifyOtp']);
 
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/v1/boards', [StudentController::class, 'getBoards']);
-    Route::get('/v1/boards/{boardId}/grades', [StudentController::class, 'getGrades']);
+    Route::post('/v1/boards', [StudentController::class, 'createBoard']);
+    Route::delete('/v1/boards/{board_id}', [StudentController::class, 'deleteBoard']);
+    Route::get('/v1/boards/{boardId}/grades',   [StudentController::class, 'getGrades']);
+    Route::post('/v1/boards/{board_id}/grades',   [StudentController::class, 'createGrade']);
+    Route::delete('/v1/boards/{board_id}/grades/{grade_id}', [StudentController::class, 'deleteGrade']);
     Route::put('/v1/users/myself', [StudentController::class, 'updateUser']);
 });
 

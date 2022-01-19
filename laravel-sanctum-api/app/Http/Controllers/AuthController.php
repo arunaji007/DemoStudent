@@ -75,7 +75,7 @@ class AuthController extends Controller
         $request->validate([
             'mobile_no' => 'required',
         ]);
-        $otp = Otp::expiry(1)->generate($request->mobile_no); //1*30 seconds exipry
+        $otp = Otp::expiry(1)->generate(env('OTP_SECRET')); //1*30 seconds exipry
         Log::info("otp = " . $otp);
         return response([
             'message' => "OtpSent"
@@ -91,8 +91,8 @@ class AuthController extends Controller
 
         $userOtp = $request->otp;
         $usermobile_no = $request->mobile_no;
-        $valid = Otp::check($userOtp, $usermobile_no);
-        
+        $valid = Otp::check($userOtp, env('OTP_SECRET'));
+
         if (!$valid)
             return response(['message' => "Invalid otp or Otp expired"], status: Response::HTTP_FORBIDDEN);
 

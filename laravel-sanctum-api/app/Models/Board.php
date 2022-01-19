@@ -9,6 +9,10 @@ class Board extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name', 'shortName', 'image'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

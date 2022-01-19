@@ -9,6 +9,7 @@ class Grade extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'boardId'];
     public function user()
     {
         return $this->belongsTo(User::class);

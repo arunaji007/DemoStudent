@@ -20,6 +20,7 @@ class CreateBoardsTable extends Migration
             $table->binary('image');
             $table->timestamps();
         });
+        DB::statement("ALTER TABLE boards AUTO_INCREMENT = 100;");
     }
 
     /**
