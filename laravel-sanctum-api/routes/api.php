@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,10 +29,14 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/v1/boards', [StudentController::class, 'getBoards']);
     Route::post('/v1/boards', [StudentController::class, 'createBoard']);
     Route::delete('/v1/boards/{board_id}', [StudentController::class, 'deleteBoard']);
-    Route::get('/v1/boards/{boardId}/grades',   [StudentController::class, 'getGrades']);
+    Route::get('/v1/boards/{board_id}/grades',   [StudentController::class, 'getGrades']);
     Route::post('/v1/boards/{board_id}/grades',   [StudentController::class, 'createGrade']);
-    Route::delete('/v1/boards/{board_id}/grades/{grade_id}', [StudentController::class, 'deleteGrade']);
+    Route::delete('/v1/boards/grades/{grade_id}', [StudentController::class, 'deleteGrade']);
     Route::put('/v1/users/myself', [StudentController::class, 'updateUser']);
+    // Route::post('/v1/grades/{grade_id}/subjects', [SubjectController::class, 'createSubject']);
+    Route::get('/v1/users/myself/subjects', [StudentController::class, 'getSubjects']);
+    // Route::delete('/v1/grades/{grade_id}/subjects/{subject_id}', [StudentController::class, 'deleteGrade']);
+    Route::get('/v1/subjects/{subject_id}/chapters', [StudentController::class, 'getChapters']);
 });
 
 Route::post('/v1/signup', [AuthController::class, 'signup']);

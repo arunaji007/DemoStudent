@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBoardsTable extends Migration
+class CreateSubjectsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class CreateBoardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('boards', function (Blueprint $table) {
+        Schema::create('subjects', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('shortName');
-            $table->binary('image');
+            $table->foreignId('gradeId')->constrained('grades');
             $table->timestamps();
-            #$table->softDeletes();
+            # $table->softDeletes();
         });
-        DB::statement("ALTER TABLE boards AUTO_INCREMENT = 100;");
+        DB::statement("ALTER TABLE subjects AUTO_INCREMENT = 10 ;");
     }
+
 
     /**
      * Reverse the migrations.
@@ -31,6 +31,11 @@ class CreateBoardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('boards');
+        Schema::dropIfExists(
+            'subjects',
+            function (Blueprint $table) {
+                $table->dropForeign(['gradeId']);
+            }
+        );
     }
 }

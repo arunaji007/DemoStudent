@@ -18,6 +18,7 @@ class CreateGradesTable extends Migration
             $table->string('name');
             $table->foreignId('boardId')->constrained('boards');
             $table->timestamps();
+            #$table->softDeletes();
         });
         DB::statement("ALTER TABLE grades AUTO_INCREMENT = 900;");
     }

@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Board;
 use App\Models\Grade;
 use App\Models\User;
-
+use App\Models\Subject;
+use App\Models\Chapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,19 +25,22 @@ class StudentController extends Controller
 
     public function getBoards()
     {
+
         $boards = Board::get();
-        if ($boards)
+        Log::info($boards);
+        if (!$boards)
             return response(['message' => 'Error in getting boards'], status: Response::HTTP_CONFLICT);
         return response(["boards" => $boards], status: Response::HTTP_OK);
     }
 
     public function createBoard(Request $request)
     {
-        $request->validate([
+        $this->validate($request, [
             'name' => 'required',
             'short_name' => 'required',
             'image' => 'required',
         ]);
+
         $board = [
             'name' => $request->input(key: 'name'),
             'shortName' => $request->input(key: 'short_name'),
@@ -63,17 +67,19 @@ class StudentController extends Controller
 
     public function getGrades(Request $request)
     {
-        $grades = Grade::where('boardId', $request->board_id)->get();
-        if ($grades)
+        $grades = Grade::where('boardId', ($request->board_id))->get();
+        Log::info(gettype($request->board_id));
+        if (!$grades)
             return response(['message' => 'Error in getting Grade'], status: Response::HTTP_CONFLICT);
         return response(["grades" => $grades], status: Response::HTTP_OK);
     }
 
     public function createGrade(Request $request)
     {
-        $request->validate([
+        $this->validate($request, [
             'name' => 'required',
         ]);
+
         $gradeexists = Grade::where('name', $request->name)->where('boardId', $request->board_id)->first();
         if ($gradeexists)
             return response(['message' => 'Grade already exists'], status: Response::HTTP_CONFLICT);
@@ -96,7 +102,7 @@ class StudentController extends Controller
         #Log::info($request);
 
         if (!$grades)
-            return response(['message' => 'Error in deleting board'], status: Response::HTTP_CONFLICT);
+            return response(['message' => 'Error in deleting grade'], status: Response::HTTP_CONFLICT);
         $grades->delete();
         return response(['message' => 'deleted grade'], status: Response::HTTP_OK);
     }
@@ -106,7 +112,10 @@ class StudentController extends Controller
         if ($request->input('mobile_no')) {
             return response(["message" => 'Mobile cannot be Updated'], status: Response::HTTP_UNAUTHORIZED);
         }
-        
+
+        if (!$request->getContent())
+            return response(["message" => 'Null Cannot be updated'], status: Response::HTTP_CONFLICT);
+
         $keys = [
             "name" => "name",
             "email" => "email",
@@ -114,14 +123,59 @@ class StudentController extends Controller
             "board_id" => "boardId",
             "grade_id" => "gradeId"
         ];
-        $items = $request->all();
+        $itemss = $request->collect();
         $array = [];
-        foreach ($items as $key => $value) {
+
+        foreach ($itemss as $key => $value) {
             $array[$keys[$key]] = ($value);
         }
 
         $user = User::where('mobile_no', $this->user['mobile_no']);
         $user->update($array);
+        $user = User::where('mobile_no', $this->user['mobile_no'])->first();
         return response(["message" => 'Updated', "user" => $user], status: Response::HTTP_OK);
+    }
+
+    public function getSubjects(Request $request)
+    {
+        $subject = null;
+        if ($request->subject) {
+            $subject = 1;
+        }
+        if ($subject == null) {
+            $subjects = Subject::where('gradeId', $this->user['gradeId'])->get(['id', 'name']);
+            if (!$subjects) {
+                return response(["message" => 'Error in getting subjects'], status: Response::HTTP_CONFLICT);
+            }
+            return response(['message' => 'Subjects Data', 'subjects' => $subjects], status: Response::HTTP_OK);
+        }
+
+
+        $subjects =
+            Subject::where('gradeId', $this->user['gradeId'])->where('name', 'regexp', "^" . $request->subject)->get(['id', 'name']);
+
+        return response(['message' => 'Subjects Data', 'subjects' => $subjects], status: Response::HTTP_OK);
+    }
+
+    public function getchapters(Request $request)
+    {
+        Log::info($request->all());
+        $chapter = null;
+        if ($request->chapter) {
+            $chapter = 1;
+        }
+        if ($chapter == null) {
+            $chapters = Chapter::where('subjectId', $request->subject_id)->get(['id', 'name']);
+            if (!$chapters) {
+                return response(["message" => 'Error in getting chapters'], status: Response::HTTP_CONFLICT);
+            }
+            return response(['message' => 'Chapters Data', 'chapters' => $chapters], status: Response::HTTP_OK);
+        }
+
+
+        $chapters =
+            Subject::where('subjectId', $request->subjectId)->where('name', 'regexp', "^" . $request->chapter)->get(['id', 'name']);
+
+        return response(['message' => 'Chapters Data', 'chapters' => $chapters], status: Response::HTTP_OK);
     }
 }

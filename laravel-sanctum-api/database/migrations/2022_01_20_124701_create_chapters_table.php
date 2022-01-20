@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBoardsTable extends Migration
+class CreateChaptersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,14 @@ class CreateBoardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('boards', function (Blueprint $table) {
+        Schema::create('chapters', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('shortName');
-            $table->binary('image');
+            $table->foreignId('subjectId')->constrained('subjects');
             $table->timestamps();
-            #$table->softDeletes();
+            # $table->softDeletes();
         });
-        DB::statement("ALTER TABLE boards AUTO_INCREMENT = 100;");
+        DB::statement("ALTER TABLE chapters AUTO_INCREMENT = 1000 ;");
     }
 
     /**
@@ -31,6 +30,11 @@ class CreateBoardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('boards');
+        Schema::dropIfExists(
+            'chapters',
+            function (Blueprint $table) {
+                $table->dropForeign(['subjectId']);
+            }
+        );
     }
 }
