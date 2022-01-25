@@ -16,7 +16,7 @@ class CreateGradesTable extends Migration
         Schema::create('grades', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->foreignId('boardId')->constrained('boards');
+            $table->foreignId('board_id')->constrained('boards');
             $table->timestamps();
             #$table->softDeletes();
         });
@@ -33,7 +33,7 @@ class CreateGradesTable extends Migration
         Schema::dropIfExists(
             'grades',
             function (Blueprint $table) {
-                $table->dropForeign(['boardId']);
+                $table->dropForeign(['board_id']);
             }
         );
     }

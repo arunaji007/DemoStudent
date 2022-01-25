@@ -16,7 +16,8 @@ class CreateChaptersTable extends Migration
         Schema::create('chapters', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->foreignId('subjectId')->constrained('subjects');
+            $table->foreignId('subject_id')->constrained('subjects');
+            $table->integer('noOfExercises');
             $table->timestamps();
             # $table->softDeletes();
         });
@@ -33,7 +34,7 @@ class CreateChaptersTable extends Migration
         Schema::dropIfExists(
             'chapters',
             function (Blueprint $table) {
-                $table->dropForeign(['subjectId']);
+                $table->dropForeign(['subject_id']);
             }
         );
     }

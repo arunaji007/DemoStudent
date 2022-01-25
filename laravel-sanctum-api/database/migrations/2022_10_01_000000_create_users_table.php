@@ -20,8 +20,8 @@ class CreateUsersTable extends Migration
             $table->string('mobile_no')->unique();
             $table->date('dob');
             $table->timestamps();
-            $table->foreignId('boardId')->nullable()->constrained('boards');
-            $table->foreignId('gradeId')->nullable()->constrained('grades');
+            $table->foreignId('board_id')->nullable()->constrained('boards');
+            $table->foreignId('grade_id')->nullable()->constrained('grades');
         });
         DB::statement("ALTER TABLE users AUTO_INCREMENT = 10000;");
     }
@@ -33,6 +33,9 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('userss', function (Blueprint $table) {
+            $table->dropForeign(['board_id']);
+            $table->dropForeign(['grade_id']);
+        });
     }
 }

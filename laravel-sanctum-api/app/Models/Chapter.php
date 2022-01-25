@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Chapter extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'subjectId'];
+    protected $fillable = ['subject_id'];
+
+    public function subjects()
+    {
+        return  $this->belongsTo(Subject::class, 'subject_id');
+    }
 }

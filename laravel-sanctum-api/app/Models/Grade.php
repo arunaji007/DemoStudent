@@ -10,7 +10,7 @@ class Grade extends Model
 {
     use HasFactory;
     #use SoftDeletes;
-    protected $fillable = ['name', 'boardId'];
+    protected $fillable = ['name', 'board_id'];
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -1,0 +1,26 @@
+ public function createAttemptSummary(Request $request)
+    {
+        if ($request->attempt_id) {
+            $data = [
+                "attempt_id" => $request->attempt_id,
+                "mark" => -1,
+                "answer" => '',
+                "answer_type" => -1,
+            ];
+            $attempt_summary = AttemptSummary::create($data);
+            if ($attempt_summary) {
+                return response(["message" => "attempt summary created"], status: Response::HTTP_OK);
+            }
+        }
+        return response(["message" => "attempt summary NOT created"], status: Response::HTTP_CONFLICT);
+    }    public function deleteAttemptSummary(Request $request)
+    {
+        $attemptssummary = AttemptSummary::where('attempt-summary_id', $request->attempt_id);
+
+        #Log::info($request);
+
+        if (!$attemptssummary)
+            return response(['message' => 'Attemptsummary not available'], status: Response::HTTP_CONFLICT);
+        $attemptssummary->delete();
+        return response(['message' => 'deleted attempt summary'], status: Response::HTTP_OK);
+    }

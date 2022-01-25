@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSubjectsTable extends Migration
+class CreateAnswersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,15 @@ class CreateSubjectsTable extends Migration
      */
     public function up()
     {
-        Schema::create('subjects', function (Blueprint $table) {
+        Schema::create('answers', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->foreignId('grade_id')->constrained('grades');
+            $table->string('content');
+            $table->boolean('correct');
+            $table->foreignId('question_id')->constrained('questions');
             $table->timestamps();
-            # $table->softDeletes();
         });
-        DB::statement("ALTER TABLE subjects AUTO_INCREMENT = 10 ;");
+        DB::statement("ALTER TABLE answers AUTO_INCREMENT = 1;");
     }
-
 
     /**
      * Reverse the migrations.
@@ -32,9 +31,9 @@ class CreateSubjectsTable extends Migration
     public function down()
     {
         Schema::dropIfExists(
-            'subjects',
+            'answers',
             function (Blueprint $table) {
-                $table->dropForeign(['grade_id']);
+                $table->dropForeign(['question_id']);
             }
         );
     }

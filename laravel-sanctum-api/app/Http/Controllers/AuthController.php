@@ -60,7 +60,7 @@ class AuthController extends Controller
         ], status: Response::HTTP_OK);
     }
 
-    public function get_user(Request $request)
+    public function getUser(Request $request)
     {
         Log::info("message");
         $user = JWTAuth::authenticate($request->token);
