@@ -18,8 +18,8 @@ class BoardFactory extends Factory
     {
         return [
             //return [
-            'name' => $this->faker->name(),
-            'shortname' => $this->faker->name(),
+            'name' => $this->faker->word(5),
+            'shortname' => $this->faker->word(2),
             'image' => $this->faker->imageUrl(),
         ];
     }

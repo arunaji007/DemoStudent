@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\PracticeController;
 /*
 |--------------------------------------------------------------------------
@@ -30,28 +31,22 @@ Route::group(['middleware' => ['jwt.verify']], function () {
         '/v1/boards',
         [StudentController::class, 'getBoards']
     );
-    // Route::post('/v1/boards', [StudentController::class, 'createBoard']);
-    // Route::delete('/v1/boards/{board_id}', [StudentController::class, 'deleteBoard']);
     Route::get(
         '/v1/boards/{board_id}/grades',
         [StudentController::class, 'getGrades']
     );
-    // Route::post('/v1/boards/{board_id}/grades',   [StudentController::class, 'createGrade']);
-    // Route::delete('/v1/boards/grades/{grade_id}', [StudentController::class, 'deleteGrade']);
     Route::get(
-        '/v1/user/myself',
-        [AuthController::class, 'getUser']
+        '/v1/users/myself',
+        [StudentController::class, 'getUser']
     );
     Route::put(
         '/v1/users/myself',
         [StudentController::class, 'updateUser']
     );
-    // Route::post('/v1/grades/{grade_id}/subjects', [SubjectController::class, 'createSubject']);
     Route::get(
         '/v1/users/myself/subjects',
         [StudentController::class, 'getSubjects']
     );
-    // Route::delete('/v1/grades/{grade_id}/subjects/{subject_id}', [StudentController::class, 'deleteGrade']);
     Route::get(
         '/v1/subjects/{subject_id}/chapters',
         [StudentController::class, 'getChapters']
@@ -108,16 +103,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
         '/v1/exercises/{exercise_id}/attempt-summaries/',
         [PracticeController::class, 'getExercisePercentage']
     );
-     
 });
 
 Route::post('/v1/signup', [AuthController::class, 'signup']);
 Route::post('/v1/login', [AuthController::class, 'login']);
-
-// 
-Route::any('{any}', function () {
-    return response()->json([
-        'status'    => false,
-        'message'   => 'Page Not Found.',
-    ], 404);
-})->where('any', '.*');

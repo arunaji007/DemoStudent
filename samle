@@ -24,3 +24,356 @@
         $attemptssummary->delete();
         return response(['message' => 'deleted attempt summary'], status: Response::HTTP_OK);
     }
+{
+    "message": "OtpVerified",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC92MVwvdmVyaWZ5LW90cCIsImlhdCI6MTY0MzY3NjM2OSwiZXhwIjoxNjQ1MTg4MzY5LCJuYmYiOjE2NDM2NzYzNzAsImp0aSI6IkM1dURySkFXUFpRc1lXdEkiLCJzdWIiOjEwMDA2LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.LLCVZv4-_k5LEnnNkyQM4K2voJ-uXQ-x237kCw_ab3w",
+    "user": {
+        "id": 10006,
+        "name": "RajKumar",
+        "email": "raj123@gmail.com",
+        "mobile_no": "9192939481",
+        "dob": "2002-01-20",
+        "created_at": "2022-02-01T00:44:23.000000Z",
+        "updated_at": "2022-02-01T00:44:23.000000Z",
+        "board_id": null,
+        "grade_id": null
+    }
+}
+
+
+
+#boards
+{
+    "boards": [
+        {
+            "id": 100,
+            "name": "Central Board Of Secondary Education",
+            "shortName": "CBSE",
+            "image": "0",
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        },
+        {
+            "id": 101,
+            "name": "State Board Of School Examinations(Sec.) & Board Of Higher Secondary Examinations, Tamil Nadu",
+            "shortName": "TNSE",
+            "image": "0",
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        },
+        {
+            "id": 102,
+            "name": " Indian Certificate of Secondary Education",
+            "shortName": "ICSE",
+            "image": "0",
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        }
+    ]
+}
+
+
+##grades
+{
+    "grades": [
+        {
+            "id": 912,
+            "name": "7",
+            "board_id": 100,
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        },
+        {
+            "id": 913,
+            "name": "8",
+            "board_id": 100,
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        },
+        {
+            "id": 914,
+            "name": "9",
+            "board_id": 100,
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        },
+        {
+            "id": 915,
+            "name": "10",
+            "board_id": 100,
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        },
+        {
+            "id": 916,
+            "name": "11",
+            "board_id": 100,
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        },
+        {
+            "id": 917,
+            "name": "12",
+            "board_id": 100,
+            "created_at": "2022-01-18T16:05:56.000000Z",
+            "updated_at": "2022-01-18T16:05:56.000000Z"
+        }
+    ]
+}
+
+##myself subjects
+
+{
+    "message": "subjects data",
+    "subjects": [
+        {
+            "id": 18,
+            "name": "Botany"
+        }
+    ]
+}
+
+
+##chapters
+{
+    "message": "chapters data",
+    "chapters": [
+        {
+            "id": 1004,
+            "name": "Calculus"
+        },
+        {
+            "id": 1005,
+            "name": "Calculus2"
+        }
+    ]
+}
+
+#usercontents
+{
+    "message": "contents",
+    "contents": [
+        {
+            "id": 90001,
+            "name": "Trig2",
+            "path": "",
+            "updated_at": "2020-01-20T10:57:49.000000Z"
+        }
+    ]
+}
+
+#contents
+{
+    "message": "contents data",
+    "contents": [
+        {
+            "id": 90001,
+            "name": "Trig2",
+            "path": ""
+        },
+        {
+            "id": 90002,
+            "name": "Trig3",
+            "path": ""
+        },
+        {
+            "id": 90003,
+            "name": "Trig4",
+            "path": ""
+        },
+        {
+            "id": 90004,
+            "name": "Trig5",
+            "path": ""
+        }
+    ]
+}
+
+
+#post commetn
+
+input:{
+    "like":2,
+    "notes":"HAPPPily"
+}
+ouput:{
+    "message": "reviews updated",
+    "reviews": {
+        "id": 80000,
+        "user_id": 10000,
+        "content_id": 90000,
+        "notes": "HAPPPily",
+        "like": 2,
+        "lastWatched": "00:00:00",
+        "lastRead": 0,
+        "created_at": "2022-01-20T10:57:49.000000Z",
+        "updated_at": "2022-02-01T04:53:48.000000Z"
+    }
+}
+
+#exercise
+{
+    "message": "exercises data",
+    "exercises": [
+        {
+            "id": 751,
+            "name": "AlgebraFormulas",
+            "duration": "00:10:00",
+            "noOfQuestions": 30
+        },
+        {
+            "id": 752,
+            "name": "AlgebraUnitFunctions",
+            "duration": "00:40:00",
+            "noOfQuestions": 30
+        }
+    ]
+}
+
+#noOfQuestions
+{
+    "questions": {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 3,
+                "content": "What is Maths?",
+                "type": 1,
+                "maxMark": 1,
+                "exercise_id": 750,
+                "created_at": "2022-01-20T10:57:49.000000Z",
+                "updated_at": "2011-01-20T10:57:49.000000Z",
+                "answers": [
+                    {
+                        "id": 11,
+                        "content": "OPTION C",
+                        "correct": 0,
+                        "question_id": 3,
+                        "solution": "",
+                        "created_at": "2022-01-20T10:57:49.000000Z",
+                        "updated_at": "2011-01-20T10:57:49.000000Z"
+                    },
+                    {
+                        "id": 12,
+                        "content": "OPTION D",
+                        "correct": 0,
+                        "question_id": 3,
+                        "solution": "",
+                        "created_at": "2022-01-20T10:57:49.000000Z",
+                        "updated_at": "2011-01-20T10:57:49.000000Z"
+                    },
+                    {
+                        "id": 10,
+                        "content": "OPTION B",
+                        "correct": 1,
+                        "question_id": 3,
+                        "solution": "",
+                        "created_at": "2022-01-20T10:57:49.000000Z",
+                        "updated_at": "2011-01-20T10:57:49.000000Z"
+                    },
+                    {
+                        "id": 9,
+                        "content": "OPTION A",
+                        "correct": 0,
+                        "question_id": 3,
+                        "solution": "",
+                        "created_at": "2022-01-20T10:57:49.000000Z",
+                        "updated_at": "2011-01-20T10:57:49.000000Z"
+                    }
+                ]
+            }
+        ],
+        "first_page_url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=1",
+        "from": 1,
+        "last_page": 5,
+        "last_page_url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=5",
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "active": false
+            },
+            {
+                "url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=1",
+                "label": "1",
+                "active": true
+            },
+            {
+                "url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=2",
+                "label": "2",
+                "active": false
+            },
+            {
+                "url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=3",
+                "label": "3",
+                "active": false
+            },
+            {
+                "url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=4",
+                "label": "4",
+                "active": false
+            },
+            {
+                "url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=5",
+                "label": "5",
+                "active": false
+            },
+            {
+                "url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=2",
+                "label": "Next &raquo;",
+                "active": false
+            }
+        ],
+        "next_page_url": "http://127.0.0.1:8000/api/v1/exercises/750/questions?page=2",
+        "path": "http://127.0.0.1:8000/api/v1/exercises/750/questions",
+        "per_page": 1,
+        "prev_page_url": null,
+        "to": 1,
+        "total": 5
+    }
+}
+
+#create attempt
+{
+    "message": "attempt created",
+    "attempt": {
+        "user_id": 10000,
+        "exercise_id": "752",
+        "score": 0,
+        "duration": "00:00:00",
+        "updated_at": "2022-02-01T04:56:22.000000Z",
+        "created_at": "2022-02-01T04:56:22.000000Z",
+        "id": 2
+    }
+}
+
+##put attempt{
+    "message": "attempts updated",
+    "attempts": [
+        {
+            "id": 2,
+            "score": 90,
+            "duration": "01:02:00",
+            "user_id": 10000,
+            "exercise_id": 752,
+            "deleted_at": null,
+            "created_at": "2022-02-01T04:56:22.000000Z",
+            "updated_at": "2022-02-01T04:57:20.000000Z"
+        }
+    ]
+}
+
+##get chapter attempt
+{
+    "message": "attempt data",
+    "attempts": [
+        {
+            "exercise_id": 752,
+            "chapter_id": 1000,
+            "high_score": 90,
+            "attempt_count": 2
+        }
+    ]
+}
+
+##delete attempt

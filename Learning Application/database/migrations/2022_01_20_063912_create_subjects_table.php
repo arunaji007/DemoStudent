@@ -20,7 +20,7 @@ class CreateSubjectsTable extends Migration
             $table->timestamps();
             # $table->softDeletes();
         });
-        DB::statement("ALTER TABLE subjects AUTO_INCREMENT = 10 ;");
+     #   DB::statement("ALTER TABLE subjects AUTO_INCREMENT = 10 ;");
     }
 
 

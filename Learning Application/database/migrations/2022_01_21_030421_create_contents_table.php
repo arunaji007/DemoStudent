@@ -11,6 +11,7 @@ class CreateContentsTable extends Migration
      *
      * @return void
      */
+
     public function up()
     {
         Schema::create('contents', function (Blueprint $table) {
@@ -23,7 +24,7 @@ class CreateContentsTable extends Migration
             $table->foreignId('chapter_id')->constrained('chapters');
             $table->timestamps();
         });
-        DB::statement("ALTER TABLE contents AUTO_INCREMENT = 90000 ;");
+     #   DB::statement("ALTER TABLE contents AUTO_INCREMENT = 90000 ;");
     }
 
     /**

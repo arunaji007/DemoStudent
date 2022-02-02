@@ -21,7 +21,7 @@ class CreateExercisesTable extends Migration
             $table->foreignId('chapter_id')->constrained('chapters');
             $table->timestamps();
         });
-        DB::statement("ALTER TABLE exercises AUTO_INCREMENT = 750 ;");
+      #  DB::statement("ALTER TABLE exercises AUTO_INCREMENT = 750 ;");
     }
 
     /**

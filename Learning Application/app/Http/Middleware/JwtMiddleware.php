@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 use Closure;
 use Illuminate\Http\Request;
@@ -24,11 +25,11 @@ class JwtMiddleware
             $user = JWTAuth::parseToken()->authenticate();
         } catch (Exception $e) {
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
-                return response()->json(['status' => 'Token is Invalid']);
+                return response(['message' => 'Token is Invalid'], status: Response::HTTP_UNAUTHORIZED);
             } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-                return response()->json(['status' => 'Token is Expired']);
+                return response(['message' => 'Token is Expired'], status: Response::HTTP_UNAUTHORIZED);
             } else {
-                return response()->json(['status' => 'Authorization Token not found']);
+                return response(['message' => 'Authorization Token not found'], status: Response::HTTP_UNAUTHORIZED);
             }
         }
         Log::info("message");

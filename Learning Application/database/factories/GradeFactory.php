@@ -20,7 +20,7 @@ class GradeFactory extends Factory
         return [
             //
             'name' => $this->faker->name(),
-            "boardId" => (Board::all()->random()->id),
+            "board_id" => (Board::all()->random()->id),
         ];
     }
 }

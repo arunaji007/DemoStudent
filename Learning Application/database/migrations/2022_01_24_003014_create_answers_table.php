@@ -18,9 +18,10 @@ class CreateAnswersTable extends Migration
             $table->string('content');
             $table->boolean('correct');
             $table->foreignId('question_id')->constrained('questions');
+            $table->string('solution')->nullable();
             $table->timestamps();
         });
-        DB::statement("ALTER TABLE answers AUTO_INCREMENT = 1;");
+      #  DB::statement("ALTER TABLE answers AUTO_INCREMENT = 1;");
     }
 
     /**

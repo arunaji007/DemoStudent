@@ -20,7 +20,7 @@ class CreateGradesTable extends Migration
             $table->timestamps();
             #$table->softDeletes();
         });
-        DB::statement("ALTER TABLE grades AUTO_INCREMENT = 900;");
+     #   DB::statement("ALTER TABLE grades AUTO_INCREMENT = 900;");
     }
 
     /**

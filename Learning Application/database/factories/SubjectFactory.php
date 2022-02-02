@@ -21,7 +21,7 @@ class SubjectFactory extends Factory
         return [
             //
             'name' => $this->faker->word(5),
-            "gradeId" => (Grade::all()->random()->id),
+            "grade_id" => (Grade::all()->random()->id),
         ];
     }
 }

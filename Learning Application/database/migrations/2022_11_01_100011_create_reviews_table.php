@@ -23,7 +23,7 @@ class CreateReviewsTable extends Migration
             $table->integer('lastRead')->nullable();
             $table->timestamps();
         });
-        DB::statement("ALTER TABLE reviews AUTO_INCREMENT = 80000 ;");
+     #   DB::statement("ALTER TABLE reviews AUTO_INCREMENT = 80000 ;");
     }
 
     /**

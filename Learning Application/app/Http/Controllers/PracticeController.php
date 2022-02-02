@@ -21,12 +21,11 @@ use App\Models\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Validator;
 
 class PracticeController extends Controller
 {
     //
-    protected $user;
-
     public function __construct()
     {
         $this->user =
@@ -35,88 +34,122 @@ class PracticeController extends Controller
 
     public function getExercises(Request $request)
     {
+        $validator = Validator::make(
+            $request->route()->parameters(),
+            [
+                "chapter_id" => "required | integer | exists:chapters,id",
+            ]
+        );
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
+        }
         $offset = $request->has('offset') ? $request->get('offset') : 1;
         $limit = $request->has('limit') ? $request->get('limit') : 4;
         if (!$request->exercise) {
-            $exercises = Exercise::where('chapter_id', $request->chapter_id)->limit($limit)->offset($offset)->get(['id', 'name', 'duration', 'noOfQuestions']);
-            if (!$exercises) {
-                return response(
-                    ["message" => 'Exercises not Available'],
-                    status: Response::HTTP_NOT_FOUND
-                );
-            }
-            return response(['message' => 'exercises Data', 'exercises' => $exercises], status: Response::HTTP_OK);
+            $exercises = Exercise::where('chapter_id', $validator->validated('chapter_id'))->limit($limit)->offset($offset)->get(['id', 'name', 'duration', 'noOfQuestions']);
+            return response(['message' => 'exercises data', 'exercises' => $exercises], status: Response::HTTP_OK);
         }
 
         $exercises =
-            Exercise::where('chapter_id', $request->chapter_id)->where('name', 'LIKE', '%' . $request->exercise . '%')->get(['id', 'name', 'duration', 'noOfQuestions']);
+            Exercise::where('chapter_id', $validator->validated('chapter_id'))->where('name', 'LIKE', '%' . $request->exercise . '%')->get(['id', 'name', 'duration', 'noOfQuestions']);
         Log::info($request->exercise);
         return response(['message' => 'exercises data', 'exercises' => $exercises], status: Response::HTTP_OK);
     }
 
     public function getQuestions(Request $request)
     {
+        $validator = Validator::make(
+            $request->route()->parameters(),
+            [
+                "exercise_id" => "required | integer | exists:exercises,id",
+            ]
+        );
 
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
+        }
         $questions = Question::with(['answers' => function ($query) {
             $query->inRandomOrder();
-        }])->inRandomOrder()->paginate(1);
-        Log::info($questions);
-        if (!$questions) {
-            return response(
-                ["message" => 'Questions not Available'],
-                status: Response::HTTP_NOT_FOUND
-            );
-        }
+        }])->where('exercise_id', $validator->validated('exercise_id'))->inRandomOrder()->paginate(1);
         return response(["questions" => $questions], status: Response::HTTP_OK);
     }
 
     public function updateAttempt(Request $request)
     {
-        if ($request->getContent()) {
-            $attempts = json_decode($request->getContent(), true);
-            $attempt = Attempt::where('id', $request->attempt_id)->update($attempts);
-            if ($attempt) {
-                $attempt_update =  Attempt::where('id', $request->attempt_id)->first();
-                return response(['message' => 'Attempts updated', 'attempts' => $attempt_update], status: Response::HTTP_OK);
-            }
-            return response(['message' => 'Attempts Not Updated'], status: Response::HTTP_NOT_FOUND);
+        $validator = Validator::make(
+            array_merge($request->all(), $request->route()->parameters()),
+            [
+                "exercise_id" => "required | integer | exists:exercises,id",
+                "attempt_id" =>  "required | integer | exists:attempts,id",
+                "score" => ["integer", "min:0", "max:100"],
+                "duration" => ["date_format:H:i:s"]
+            ]
+        );
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
+
+        Log::info($validator->validated()['attempt_id']);
+        $attempt = Attempt::where('id', $validator->validated()['attempt_id'])->update($request->all());
+        $attempt_update =  Attempt::where('id', $validator->validated()['attempt_id'])->get();
+        return response(['message' => 'attempts updated', 'attempts' => $attempt_update], status: Response::HTTP_OK);
+    }
+
+    public function createAttempt(Request $request)
+    {
+        $validator = Validator::make(
+            $request->route()->parameters(),
+            [
+                "exercise_id"
+                => "required | integer | exists:exercises,id",
+            ]
+        );
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
+        }
+        $data = [
+            "user_id" => $this->user['id'],
+            "exercise_id" => $request->exercise_id,
+            "score" => 0,
+            "duration" => '00:00:00',
+        ];
+        $attempt = Attempt::create($data);
+        return response(["message" => "attempt created","attempt"=>$attempt], status: Response::HTTP_OK);
     }
 
     public function deleteAttempt(Request $request)
     {
-        $attempts = Attempt::where('id', $request->attempt_id)->get();
-        Log::info($attempts);
 
-        if ($attempts->isEmpty()) {
-            return response(['message' => 'Attempt not available'], status: Response::HTTP_CONFLICT);
+        $validator = Validator::make(
+            $request->route()->parameters(),
+            [
+                "exercise_id"
+                => "required | integer | exists:exercises,id",
+                "attempt_id" => "required | integer | exists:attempts,id",
+            ]
+        );
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
-        $attempts = Attempt::where('id', $request->attempt_id);
-        $attempt_summary = AttemptSummary::where('attempt_id', $request->attempt_id);
+        $attempts = Attempt::where('id',  $validator->validated('attempt_id'));
+        $attempt_summary = AttemptSummary::where('attempt_id', $validator->validated('attempt_id'));
         $attempt_summary->delete();
         $attempts->delete();
         return response(['message' => 'deleted attempt'], status: Response::HTTP_OK);
     }
-    public function createAttempt(Request $request)
-    {
-        if (!$request->getContent()) {
-            $data = [
-                "user_id" => $this->user['id'],
-                "exercise_id" => $request->exercise_id,
-                "score" => 0,
-                "duration" => '00:00:00',
-            ];
-            $attempt = Attempt::create($data);
-            if ($attempt) {
-                return response(["message" => "attempt created", "attempt_id" => $attempt['id']], status: Response::HTTP_OK);
-            }
-        }
-        return response(["message" => "attempt NOT created"], status: Response::HTTP_CONFLICT);
-    }
 
     public function getAttempts(Request $request)
     {
-
+        $validator = Validator::make(
+            $request->route()->parameters(),
+            [
+                "chapter_id"
+                => "required | integer | exists:chapters,id",
+            ]
+        );
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
+        }
         $attempt = DB::table('attempts')
             ->join('exercises', 'attempts.exercise_id', 'exercises.id')
             ->where([['user_id', $this->user['id']], ['exercises.chapter_id', $request->chapter_id]])
@@ -127,14 +160,6 @@ class PracticeController extends Controller
                 DB::raw('MAX(score) as high_score'),
                 DB::raw('COUNT(exercise_id) as attempt_count')
             ]);
-
-        // ->groupBy('exercise_id')
-        // ->get([
-        //     'exercise_id',
-        //     DB::raw('MAX(score) as high_score'),
-        //     DB::raw('COUNT(exercise_id) as count')
-        // ]);
-        #$attempt = Attempt::where();
         if ($attempt) {
             return response(["message" => "attempt data",  "attempts" => $attempt], status: Response::HTTP_CONFLICT);
         }
@@ -142,62 +167,78 @@ class PracticeController extends Controller
 
     public function updateSummary(Request $request)
     {
-        $question  = AttemptSummary::where([['attempt_id', $request->attempt_id], ['question_id', $request->question_id]])->get();
-        Log::info($request->question_id);
-        Log::info($question);
-        if ($question->isEmpty()) {
-            $summary =
-                json_decode($request->getContent(), true);
-            $summary['attempt_id'] = $request->attempt_id;
-            $attempt_summary = AttemptSummary::create($summary);
-            if ($attempt_summary) {
-                return response(["message" => "attempt summary created"], status: Response::HTTP_OK);
-            }
-        } else {
-            if ($request->attempt_id) {
-                $summary = json_decode($request->getContent(), true);
-                $summary = AttemptSummary::where([
-                    ['attempt_id', $request->attempt_id],
-                    ['question_id', $summary['question_id']]
-                ])->update($summary);
-                if ($summary) {
-                    $summary_update =  AttemptSummary::where('attempt_id', $request->attempt_id)->first();
-                    return response(['message' => 'Summary updated', 'attempts_summary' => $summary_update], status: Response::HTTP_OK);
-                }
-            }
+        $validator = Validator::make(
+            array_merge($request->all(), $request->route()->parameters()),
+            [
+                "exercise_id" => "required | integer | exists:exercises,id",
+                "attempt_id" =>  "required | integer | exists:attempts,id",
+                "question_id" =>
+                "required | integer | exists:questions,id",
+                "answer_id"
+                => "required | integer | exists:answers,id",
+                "mark" => "integer|min:1|max:5",
+                "answer_type" => "integer|min:1|max:3",
+                "answer" => "alpha"
+            ]
+        );
 
-            return response(['message' => 'Attempts Summary Not Updated'], status: Response::HTTP_NOT_FOUND);
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
+
+        $summaries = $validator->validated();
+        $data = Arr::except($summaries, ['exercise_id']); //update all except exercise id
+        $update = AttemptSummary::upsert($data, ['attempt_id', 'question_id'], array_keys($data));
+        $summary_update =  AttemptSummary::where('attempt_id', $request->attempt_id)->get();
+        return response(['message' => 'summary updated', 'attempts_summary' => $summary_update], status: Response::HTTP_OK);
     }
 
     public function getAttemptSummary(Request $request)
     {
-        try {
-            $attempt_summary = Attempt::with('attempt_summaries')->where('id', $request->attempt_id)->first();
-            if (!$attempt_summary) {
-                return response(["message" => "Attempt not available"], status: Response::HTTP_NOT_FOUND);
-            }
-            $exercise_question = Exercise::where('id', $attempt_summary['exercise_id'])->first('noOfQuestions');
-            $time = date_parse($attempt_summary['duration']);
-            $seconds = $time['hour'] * 3600 + $time['minute'] * 60 + $time['second'];
-            $attempt_summary['answer_per_second'] = $exercise_question['noOfQuestions'] / (int) $seconds;
-
-            $attemptAns = AttemptSummary::join('attempts', 'id', 'attempt_summaries.attempt_id')->where('answer_type', 1)->count('id');
-            $attemptWrong = AttemptSummary::join('attempts', 'id', 'attempt_summaries.attempt_id')->where('answer_type', 2)->count('id');
-            $attemptUnans = AttemptSummary::join('attempts', 'id', 'attempt_summaries.attempt_id')->where('answer_type', 3)->count('id');
-            $attempteval = AttemptSummary::join('attempts', 'id', 'attempt_summaries.attempt_id')->where('answer_type', 4)->count('id');
-            $attemptacc = AttemptSummary::join('attempts', 'id', 'attempt_summaries.attempt_id')->whereIn('answer_type', [1, 2, 4])->count('id');
-
-
-            $attempt_summary['correct_answered'] = $attemptAns;
-            $attempt_summary['wrong_answered'] = $attemptWrong;
-            $attempt_summary['un_answered'] = $attemptUnans;
-            $attempt_summary['evalauting'] = $attempteval;
-            $attempt_summary['accuracy']  =
-                $attemptAns / $attemptacc;
-            return response(["message" => "Attempt Data", "attempt_summary" => $attempt_summary], status: Response::HTTP_OK);
-        } catch (Exception $e) {
-            return Response(["error" => $e,], stauts: Response::HTTP_CONFLICT);
+        $validator = Validator::make(
+            ($request->route()->parameters()),
+            [
+                "exercise_id" => "required | integer | exists:exercises,id",
+                "attempt_id" =>  "required | integer | exists:attempts,id",
+            ]
+        );
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
+
+        $attempt_summary = Attempt::with('attempt_summaries')->where('id', $validator->validated()['attempt_id'])->first();
+        $attempt = AttemptSummary::groupBy('answer_type')->where('attempt_id', $request->attempt_id)->selectRAW('count(*) as total,answer_type')->orderBy('answer_type')->get();
+        $sum = 0;
+        $ans = 0;
+        for ($i = 0; $i < count($attempt); $i++) {
+            if ($i == 0) {
+                $attempt_summary['correct_answered'] = $attempt[$i]['answer_type'];
+                $sum
+                    += $attempt[$i]['answer_type'];
+                $ans += $attempt[$i]['answer_type'];
+            }
+            if ($i == 1) {
+                $attempt_summary['wrong_answered'] = $attempt[$i]['answer_type'];
+                $sum
+                    += $attempt[$i]['answer_type'];
+                $ans += $attempt[$i]['answer_type'];
+            }
+            if ($i == 2) {
+                $attempt_summary['un_answered'] = $attempt[$i]['answer_type'];
+                $sum
+                    += $attempt[$i]['answer_type'];
+            }
+            if ($i == 3) {
+                $attempt_summary['evaluating'] = $attempt[$i]['answer_type'];
+            }
+        }
+        $time = date_parse($attempt_summary['duration']);
+        $seconds = $time['hour'] * 3600 + $time['minute'] * 60 + $time['second'];
+        $attempt_summary['answer_per_second'] = $ans / (int) $seconds;
+        if ($attempt_summary['correct_answered']) {
+            $attempt_summary['accuracy']  =
+                $attempt_summary['correct_answered'] / $sum;
+        }
+        return response(["message" => "Attempt Data", "attempt_summary" => $attempt_summary], status: Response::HTTP_OK);
     }
 }

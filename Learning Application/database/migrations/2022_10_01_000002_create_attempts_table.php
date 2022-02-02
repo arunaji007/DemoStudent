@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateQuestionsTable extends Migration
+class CreateAttemptsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,16 @@ class CreateQuestionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('questions', function (Blueprint $table) {
+        Schema::create('attempts', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('content');
-            $table->integer('type');
-            $table->integer('maxMark');
+            $table->integer('score');
+            $table->time('duration')->defualt('00:00:00');
+            $table->foreignId('user_id')->constrained('users');
             $table->foreignId('exercise_id')->constrained('exercises');
+            $table->softDeletes();
             $table->timestamps();
         });
-      #  DB::statement("ALTER TABLE questions AUTO_INCREMENT = 1;");
+       # DB::statement("ALTER TABLE attempts AUTO_INCREMENT = 1500;");
     }
 
     /**
@@ -31,7 +32,9 @@ class CreateQuestionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('questions', function (Blueprint $table) {
+
+        Schema::dropIfExists('attempts', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
             $table->dropForeign(['exercise_id']);
         });
     }

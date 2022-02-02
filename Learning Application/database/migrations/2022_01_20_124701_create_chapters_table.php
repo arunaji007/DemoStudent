@@ -19,9 +19,9 @@ class CreateChaptersTable extends Migration
             $table->foreignId('subject_id')->constrained('subjects');
             $table->integer('noOfExercises');
             $table->timestamps();
-            # $table->softDeletes();
+            #$table->softDeletes();
         });
-        DB::statement("ALTER TABLE chapters AUTO_INCREMENT = 1000 ;");
+ #       DB::statement("ALTER TABLE chapters AUTO_INCREMENT = 1000 ;");
     }
 
     /**
