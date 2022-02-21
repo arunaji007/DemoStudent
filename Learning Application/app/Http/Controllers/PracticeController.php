@@ -47,13 +47,13 @@ class PracticeController extends Controller
         $limit = $request->has('limit') ? $request->get('limit') : 4;
         if (!$request->exercise) {
             $exercises = Exercise::where('chapter_id', $validator->validated('chapter_id'))->limit($limit)->offset($offset)->get(['id', 'name', 'duration', 'noOfQuestions']);
-            return response(['message' => 'exercises data', 'exercises' => $exercises], status: Response::HTTP_OK);
+            return response(['exercises' => $exercises], status: Response::HTTP_OK);
         }
 
         $exercises =
             Exercise::where('chapter_id', $validator->validated('chapter_id'))->where('name', 'LIKE', '%' . $request->exercise . '%')->get(['id', 'name', 'duration', 'noOfQuestions']);
         Log::info($request->exercise);
-        return response(['message' => 'exercises data', 'exercises' => $exercises], status: Response::HTTP_OK);
+        return response(['exercises' => $exercises], status: Response::HTTP_OK);
     }
 
     public function getQuestions(Request $request)
@@ -114,7 +114,7 @@ class PracticeController extends Controller
             "duration" => '00:00:00',
         ];
         $attempt = Attempt::create($data);
-        return response(["message" => "attempt created","attempt"=>$attempt], status: Response::HTTP_OK);
+        return response(["attempt" => $attempt], status: Response::HTTP_OK);
     }
 
     public function deleteAttempt(Request $request)

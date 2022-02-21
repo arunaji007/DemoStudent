@@ -131,12 +131,12 @@ class StudentController extends Controller
         $limit = $request->has('limit') ? $request->get('limit') : 4;
         if (!$request->subject) {
             $subjects = StudentController::subjecthelper($limit, $offset);
-            return response(['message' => 'subjects data', 'subjects' => $subjects], status: Response::HTTP_OK);
+            return response(['subjects' => $subjects], status: Response::HTTP_OK);
         }
         $subjects =
             Subject::where('grade_id', $this->user['grade_id'])->where('name', 'LIKE', ('%' . $request->subject . '%'))->limit($limit)->offset($offset)->get(['id', 'name']);
 
-        return response(['message' => 'subjects data', 'subjects' => $subjects], status: Response::HTTP_OK);
+        return response(['subjects' => $subjects], status: Response::HTTP_OK);
     }
 
     public function getChapters(Request $request)
@@ -154,13 +154,13 @@ class StudentController extends Controller
         $offset = $request->has('offset') ? $request->get('offset') : 1;
         $limit = $request->has('limit') ? $request->get('limit') : 4;
         if (!$request->chapter) {
-            $chapters = Chapter::where('subject_id', $validator->validated('subject_id'))->limit($limit)->offset($offset)->get(['id', 'name']);
-            return response(['message' => 'chapters data', 'chapters' => $chapters], status: Response::HTTP_OK);
+            $chapters = Chapter::where('subject_id', $validator->validated('subject_id'))->limit($limit)->offset($offset)->get(['id', 'name', 'chapter_id']);
+            return response(['chapters' => $chapters], status: Response::HTTP_OK);
         }
 
         $chapters =
-            Chapter::where('subject_id', $validator->validated('subject_id'))->where('name', 'LIKE', '%' . $request->chapter . '%')->limit($limit)->offset($offset)->get(['id', 'name']);
-        return response(['message' => 'chapters data', 'chapters' => $chapters], status: Response::HTTP_OK);
+            Chapter::where('subject_id', $validator->validated('subject_id'))->where('name', 'LIKE', '%' . $request->chapter . '%')->limit($limit)->offset($offset)->get(['id', 'name', 'chapter_id']);
+        return response(['chapters' => $chapters], status: Response::HTTP_OK);
     }
 
     public function getUserContents(Request $request)
@@ -170,7 +170,7 @@ class StudentController extends Controller
 
         $contents = Review::join('contents', 'reviews.content_id', 'contents.id')->where('user_id', $this->user['id'])->orderBy('reviews.updated_at', 'desc')->limit($limit)->offset($offset)->get(['contents.id', 'contents.name', 'path', 'reviews.updated_at']);
 
-        return response(['message' => 'contents', "contents" => $contents], status: Response::HTTP_OK);
+        return response(["contents" => $contents], status: Response::HTTP_OK);
     }
 
     public function getContents(Request $request)
@@ -191,11 +191,11 @@ class StudentController extends Controller
 
         if (!$request->content) { //query param
             $contents = Content::where('chapter_id', $validator->validated('chapter_id'))->limit($limit)->offset($offset)->get(['id', 'name', 'path']);
-            return response(['message' => 'contents data', 'contents' => $contents], status: Response::HTTP_OK);
+            return response(['contents' => $contents], status: Response::HTTP_OK);
         }
 
         $contents = Content::where('chapter_id', $validator->validated('chapter_id'))->where('name', 'LIKE', ('%' . $request->content . '%'))->limit($limit)->offset($offset)->get(['id', 'name', 'path']);
-        return response(['message' => 'contents data', 'contents' => $contents], status: Response::HTTP_OK);
+        return response(['contents' => $contents], status: Response::HTTP_OK);
     }
 
     public function viewContent(Request $request)
@@ -210,13 +210,13 @@ class StudentController extends Controller
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
-        $reviews = Review::where('content_id', $request->content_id)->where('user_id', $this->user['id'])->get(['id', 'notes', 'like', 'lastRead', 'lastWatched'])->first();
         $updated_date = Carbon::now();
         Review::where('content_id', $request->content_id)->where('user_id', $this->user['id'])->update(['updated_at' => $updated_date]);
-        return response(['message' => 'reviews data', 'reviews' => $reviews], status: Response::HTTP_OK);
+        $reviews = Review::where('content_id', $request->content_id)->where('user_id', $this->user['id'])->get(['id', 'notes', 'like', 'lastRead', 'lastWatched'])->first();
+        return response(['reviews' => $reviews], status: Response::HTTP_OK);
     }
 
-    public function postReviews(Request $request) //put
+    public function updateReviews(Request $request) //put
     {
         $validator = Validator::make(array_merge($request->route()->parameters(), $request->all()), [
             'notes' => 'alpha_num',
@@ -228,8 +228,8 @@ class StudentController extends Controller
             return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
 
-        $review = Review::where('content_id', $request->content_id)->where('user_id', $this->user['id'])->update($validator->validated());
+        Review::where('content_id', $request->content_id)->where('user_id', $this->user['id'])->update($validator->validated());
         $review_update = Review::where('content_id', $request->content_id)->where('user_id', $this->user['id'])->first();
-        return response(['message' => 'reviews updated', 'reviews' => $review_update], status: Response::HTTP_CREATED);
+        return response(['reviews' => $review_update], status: Response::HTTP_CREATED);
     }
 }

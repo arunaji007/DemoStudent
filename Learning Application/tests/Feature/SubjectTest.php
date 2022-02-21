@@ -31,10 +31,8 @@ class SubjectTest extends TestCase
         ]);
         $token = JWTAuth::fromUser($this->user);
         $this->withHeader('Authorization', 'Bearer ' . $token);
-    }
-    public function test_user_subject_without_query_params()
-    {
         Board::factory()->create();
+        Grade::factory()->create();
         Grade::factory()->create();
         Subject::factory()->create();
         Subject::factory()->create();
@@ -46,24 +44,40 @@ class SubjectTest extends TestCase
         Subject::factory()->create();
         Subject::factory()->create();
         Subject::factory()->create();
+    }
+    public function test_user_subject_without_query_params()
+    {
         $this->json(
             'GET',
-            'api/v1/users/myself/subjects',
-        )->assertStatus(200)->assertJsonStructure(["message" => "subjects data", "subjects" => [
-            'id',
-            'name',
-        ]]);
+            'api/v1/users/myself/subjects'
+        )->assertStatus(200)->assertJsonStructure(["subjects" => [[
+            "id",
+            "name",
+            "grade_id",
+            "created_at",
+            "updated_at",
+            "contents_count",
+            "subjects_percentage",
+            "exercise_percentage",
+        ],],]);
     }
-    public function test_user_subject_with_query_params()
+
+    public function test_user_subject_with_query_params_limit()
     {
         $limit = 2;
         $this->json(
             'GET',
             'api/v1/users/myself/subjects',
             ["limit" => $limit],
-        )->assertStatus(200)->assertJsonStructure(["message" => "subjects data", "subjects" => [[
-            'id',
-            'name',
+        )->assertStatus(200)->assertJsonStructure(["subjects" => [[
+            "id",
+            "name",
+            "grade_id",
+            "created_at",
+            "updated_at",
+            "contents_count",
+            "subjects_percentage",
+            "exercise_percentage",
         ]]]);
     }
 
@@ -73,9 +87,15 @@ class SubjectTest extends TestCase
             'GET',
             'api/v1/users/myself/subjects',
             ["chapter" => 's'],
-        )->assertStatus(200)->assertJsonStructure(["message" => "subjects data", "subjects" => [[
-            'id',
-            'name',
+        )->assertStatus(200)->assertJsonStructure(["subjects" => [[
+            "id",
+            "name",
+            "grade_id",
+            "created_at",
+            "updated_at",
+            "contents_count",
+            "subjects_percentage",
+            "exercise_percentage",
         ]]]);
     }
 }

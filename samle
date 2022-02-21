@@ -377,3 +377,54 @@ ouput:{
 }
 
 ##delete attempt
+
+  public function test_user_contents()
+    {
+        $this->json(
+            'GET',
+            '/api/v1/users/myself/contents'
+        )->assertStatus(200)->assertJsonStructure(["contents" => [[
+            "id",
+            "name",
+            "path",
+            "updated_at"
+        ]]]);
+    }
+
+    ->assertJsonStructure(["questions"=>[ 
+        "current_page"
+        "data"=> [
+            [
+                "id",
+                "content",
+                "type",
+                "maxMark",
+                "exercise_id",
+                "created_at",
+                "updated_at",
+                "answers"=> [
+                    [
+                        "id",
+                        "content",
+                        "correct",
+                        "question_id",
+                        "solution",
+                        "created_at",
+                        "updated_at,
+                    ]
+                ]
+            ]
+        ]
+        "first_page_url",
+        "from",
+        "last_page",
+        "last_page_url",
+        "links"=> [[
+            "url",
+                "label",
+                "active"
+
+        ]]
+        
+    ]
+])
