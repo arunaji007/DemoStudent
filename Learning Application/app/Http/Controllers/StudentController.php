@@ -154,12 +154,12 @@ class StudentController extends Controller
         $offset = $request->has('offset') ? $request->get('offset') : 1;
         $limit = $request->has('limit') ? $request->get('limit') : 4;
         if (!$request->chapter) {
-            $chapters = Chapter::where('subject_id', $validator->validated('subject_id'))->limit($limit)->offset($offset)->get(['id', 'name', 'chapter_id']);
+            $chapters = Chapter::where('subject_id', $validator->validated('subject_id'))->limit($limit)->offset($offset)->get();
             return response(['chapters' => $chapters], status: Response::HTTP_OK);
         }
 
         $chapters =
-            Chapter::where('subject_id', $validator->validated('subject_id'))->where('name', 'LIKE', '%' . $request->chapter . '%')->limit($limit)->offset($offset)->get(['id', 'name', 'chapter_id']);
+            Chapter::where('subject_id', $validator->validated('subject_id'))->where('name', 'LIKE', '%' . $request->chapter . '%')->limit($limit)->offset($offset)->get();
         return response(['chapters' => $chapters], status: Response::HTTP_OK);
     }
 

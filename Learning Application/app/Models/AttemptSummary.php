@@ -10,6 +10,7 @@ class AttemptSummary extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    protected $primaryKey = ['attempt_id', 'question_id'];
     protected $fillable = [
         "attempt_id",
         "mark",

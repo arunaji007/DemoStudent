@@ -92,7 +92,7 @@ class PracticeController extends Controller
         Log::info($validator->validated()['attempt_id']);
         $attempt = Attempt::where('id', $validator->validated()['attempt_id'])->update($request->all());
         $attempt_update =  Attempt::where('id', $validator->validated()['attempt_id'])->get();
-        return response(['message' => 'attempts updated', 'attempts' => $attempt_update], status: Response::HTTP_OK);
+        return response(['attempts' => $attempt_update], status: Response::HTTP_OK);
     }
 
     public function createAttempt(Request $request)
@@ -161,7 +161,7 @@ class PracticeController extends Controller
                 DB::raw('COUNT(exercise_id) as attempt_count')
             ]);
         if ($attempt) {
-            return response(["message" => "attempt data",  "attempts" => $attempt], status: Response::HTTP_CONFLICT);
+            return response(["attempts" => $attempt], status: Response::HTTP_CONFLICT);
         }
     }
 
@@ -190,7 +190,7 @@ class PracticeController extends Controller
         $data = Arr::except($summaries, ['exercise_id']); //update all except exercise id
         $update = AttemptSummary::upsert($data, ['attempt_id', 'question_id'], array_keys($data));
         $summary_update =  AttemptSummary::where('attempt_id', $request->attempt_id)->get();
-        return response(['message' => 'summary updated', 'attempts_summary' => $summary_update], status: Response::HTTP_OK);
+        return response(['attempts_summary' => $summary_update], status: Response::HTTP_OK);
     }
 
     public function getAttemptSummary(Request $request)
@@ -239,6 +239,6 @@ class PracticeController extends Controller
             $attempt_summary['accuracy']  =
                 $attempt_summary['correct_answered'] / $sum;
         }
-        return response(["message" => "Attempt Data", "attempt_summary" => $attempt_summary], status: Response::HTTP_OK);
+        return response(["attempt_summary" => $attempt_summary], status: Response::HTTP_OK);
     }
 }

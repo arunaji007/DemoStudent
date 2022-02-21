@@ -43,13 +43,16 @@ class ChapterTest extends TestCase
 
         $id = Subject::all()->random()->id;
         Log::info($id);
-        $this->json('GET', 'api/v1/users/myself/subjects/' . $id . '/chapters')->assertStatus(200)
+        $this->json('GET', 'api/v1/subjects/' . $id . '/chapters')->assertStatus(200)
             ->assertJsonStructure(['chapters' =>
             [
                 [
+
                     'id',
                     'name',
-                    'chapter_id'
+                    'subject_id',
+                    'noOfExercises',
+
                 ]
             ]]);
     }
@@ -59,7 +62,7 @@ class ChapterTest extends TestCase
         $id = Subject::all()->random()->id;
         $this->json(
             'GET',
-            'api/v1/users/myself/subjects/' . $id . '/chapters',
+            'api/v1/subjects/' . $id . '/chapters',
             ["limit" => $limit]
         )->assertStatus(200)
             ->assertJsonStructure(['chapters' =>
@@ -67,7 +70,8 @@ class ChapterTest extends TestCase
                 [
                     'id',
                     'name',
-                    'chapter_id'
+                    'subject_id',
+                    'noOfExercises',
                 ]
             ]]);
     }
@@ -76,7 +80,7 @@ class ChapterTest extends TestCase
         $id = Subject::all()->random()->id;
         $this->json(
             'GET',
-            'api/v1/users/myself/subjects/' . $id . '/chapters',
+            'api/v1/subjects/' . $id . '/chapters',
             ["chapter" => 's']
         )->assertStatus(200)
             ->assertJsonStructure(['chapters' =>
@@ -84,7 +88,8 @@ class ChapterTest extends TestCase
                 [
                     'id',
                     'name',
-                    'chapter_id'
+                    'subject_id',
+                    'noOfExercises',
                 ]
             ]]);
     }

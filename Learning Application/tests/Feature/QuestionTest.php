@@ -15,6 +15,7 @@ use App\Models\Chapter;
 use App\Models\Exercise;
 use App\Models\Question;
 use JWTAuth;
+use Illuminate\Support\Facades\Log;
 
 class QuestionTest extends TestCase
 {
@@ -58,7 +59,7 @@ class QuestionTest extends TestCase
     public function test_user_question_with_pagination()
     {
         $eid = Exercise::all()->random()->id;
-        $this->json('GET', 'api/v1/exercises/' . $eid . '/questions')->assertStatus(200)->assertJsonStructure(["questions" => [
+        $c = $this->json('GET', 'api/v1/exercises/' . $eid . '/questions')->assertStatus(200)->assertJsonStructure(["questions" => [
             "current_page",
             "data" => [
                 [
@@ -97,6 +98,78 @@ class QuestionTest extends TestCase
             "prev_page_url",
             "to",
             "total",
-        ]]);
+        ]])->decodeResponseJson();
+        Log::info(json_encode($c));
+    }
+
+    public function test_user_question_with_known_pagination()
+    {
+        $eid = Exercise::all()->random()->id;
+        $c = $this->json('GET', 'api/v1/exercises/' . $eid . '/questions', ["page" => 2])->assertStatus(200)->assertJsonStructure(["questions" => [
+            "current_page",
+            "data" => [
+                [
+                    "id",
+                    "content",
+                    "type",
+                    "maxMark",
+                    "exercise_id",
+                    "created_at",
+                    "updated_at",
+                    "answers" => [
+                        [
+                            "id",
+                            "content",
+                            "correct",
+                            "question_id",
+                            "solution",
+                            "created_at",
+                            "updated_at",
+                        ],
+                    ]
+                ],
+            ],
+            "first_page_url",
+            "from",
+            "last_page",
+            "last_page_url",
+            "links" => [[
+                "url",
+                "label",
+                "active"
+            ]],
+            "next_page_url",
+            "path",
+            "per_page",
+            "prev_page_url",
+            "to",
+            "total",
+        ]])->decodeResponseJson();
+        Log::info(json_encode($c));
+    }
+    public function test_user_question_with_unknown_page()
+    {
+        $eid = Exercise::all()->random()->id;
+
+        $c = $this->json('GET', 'api/v1/exercises/' . $eid . '/questions', ["page" => 3])->assertStatus(200)->assertJsonStructure(["questions" => [
+            "current_page",
+            "data" => [],
+            "first_page_url",
+            "from",
+            "last_page",
+            "last_page_url",
+            "links" => [[
+                "url",
+                "label",
+                "active"
+            ]],
+            "next_page_url",
+            "path",
+            "per_page",
+            "prev_page_url",
+            "to",
+            "total",
+        ]])->decodeResponseJson();
+        Log::info(json_encode($c));
     }
 }

@@ -99,10 +99,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
         '/v1/exercises/{exercise_id}/attempts/{attempt_id}/attempt-summaries/',
         [PracticeController::class, 'getAttemptSummary']
     );
-    Route::get(
-        '/v1/exercises/{exercise_id}/attempt-summaries/',
-        [PracticeController::class, 'getExercisePercentage']
-    );
 });
 
 Route::post('/v1/signup', [AuthController::class, 'signup']);

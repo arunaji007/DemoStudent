@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Grade;
@@ -42,11 +42,12 @@ class AttemptTest extends TestCase
         Subject::factory()->count(1)->create();
         Chapter::factory()->count(1)->create();
         Exercise::factory()->count(1)->create();
+        Attempt::factory()->create();
     }
     public function test_user_create_attempt()
     {
         $id = Exercise::all()->random()->id;
-        $this->json('POST', 'api/v1/exercise/' . $id . '/attempts')->assertStatus(200)
+        $content = $this->json('POST', 'api/v1/exercise/' . $id . '/attempts')->assertStatus(200)
             ->assertJsonStructure(["attempt" => [
                 "user_id",
                 "exercise_id",
@@ -55,7 +56,10 @@ class AttemptTest extends TestCase
                 "updated_at",
                 "created_at",
                 "id",
-            ]]);
+            ]])->decodeResponseJson();
+
+
+        $this->assertDatabaseHas('Attempts', ['id' => $content["attempt"]['id']]);
     }
     public function test_user_delete_attempt()
     {
@@ -63,5 +67,40 @@ class AttemptTest extends TestCase
         Attempt::factory()->create(["user_id" => $this->user['id']]);
         $aid = Attempt::all()->random()->id;
         $this->json('delete', 'api/v1/exercises/' . $id . '/' . 'attempts/' . $aid)->assertStatus(200)->assertJsonStructure(["message"]);
+    }
+
+    public function test_user_get_attempts()
+    {
+        $id = Chapter::all()->random()->id;
+        $this->json('GET', 'api/v1/chapters/' . $id . '/attempts')->assertStatus(200)
+            ->assertJsonStructure(["attempt" => [
+                "exercise_id",
+                "chapter_id",
+                "high_score",
+                "attempt_count",
+            ]]);
+    }
+
+    public function test_user_update_attempt()
+    {
+        Attempt::factory()->create();
+        $id = Exercise::all()->random()->id;
+        $aid = Attempt::all()->random()->id;
+        $data = ["score" => 89, "duration" => "01:00:09"];
+        $this->json('PUT', 'api/v1/exercises/' . $id . '/attempts' . '/' . $aid, $data)->assertStatus(200)
+            ->assertJsonStructure(["attempts" => [
+                [
+                    "id",
+                    "score",
+                    "duration",
+                    "user_id",
+                    "exercise_id",
+                    "deleted_at",
+                    "created_at",
+                    "updated_at",
+                ]
+            ]]);
+
+        $this->assertDatabaseHas('attempts', ["id" => $aid, "score" => $data['score'], "duration" => $data["duration"]]);
     }
 }
