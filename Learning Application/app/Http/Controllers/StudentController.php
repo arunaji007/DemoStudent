@@ -131,6 +131,7 @@ class StudentController extends Controller
         $limit = $request->has('limit') ? $request->get('limit') : 4;
         if (!$request->subject) {
             $subjects = StudentController::subjecthelper($limit, $offset);
+            Log::info(json_encode($subjects));
             return response(['subjects' => $subjects], status: Response::HTTP_OK);
         }
         $subjects =

@@ -20,12 +20,13 @@ class AttemptSummaryFactory extends Factory
     public function definition()
     {
         return [
-            "answer_type" => $this->faker->numberBetween(1, 3),
+            "answer_type"
+            => 1,
             "answer" => $this->faker->word(5),
-            "mark" => $this->faker->numberBetween(0, 1),
-            "attempt_id" => Attempt::factory(),
-            "question_id" => Question::factory(),
-            "answer_id" => Answer::factory(),
+            "mark" => 1,
+            "attempt_id" => Attempt::all()->random()->id,
+            "question_id" => Question::all()->random()->id,
+            "answer_id" => Answer::all()->random()->id,
         ];
     }
 }

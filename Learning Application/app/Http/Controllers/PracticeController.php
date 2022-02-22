@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Models\Attempt;
 use App\Models\Question;
 use App\Models\Answer;
-use App\Models\AttemptSummary;
+use App\Models\AttemptSummary;  
 use App\Models\Subject;
 use App\Models\Chapter;
 use App\Models\Review;
@@ -188,7 +188,7 @@ class PracticeController extends Controller
 
         $summaries = $validator->validated();
         $data = Arr::except($summaries, ['exercise_id']); //update all except exercise id
-        $update = AttemptSummary::upsert($data, ['attempt_id', 'question_id'], array_keys($data));
+        AttemptSummary::upsert($data, ['attempt_id', 'question_id'], array_keys($data));
         $summary_update =  AttemptSummary::where('attempt_id', $request->attempt_id)->get();
         return response(['attempts_summary' => $summary_update], status: Response::HTTP_OK);
     }

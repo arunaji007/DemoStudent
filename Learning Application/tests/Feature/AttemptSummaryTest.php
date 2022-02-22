@@ -51,26 +51,25 @@ class AttemptSummaryTest extends TestCase
         Answer::factory()->create(['correct' => true, 'question_id' => $id]);
         Answer::factory()->create(['correct' => false, 'question_id' => $id]);
         Answer::factory()->create(['correct' => false, 'question_id' => $id]);
+        Attempt::factory()->count(1)->create();
+        AttemptSummary::factory()->create(["attempt_id" => Attempt::all()->random()->id, "question_id" => $id]);
         Question::factory()->count(1)->create();
         $id = Question::all()->random()->id;
         Answer::factory()->create(['correct' => false, 'question_id' => $id]);
         Answer::factory()->create(['correct' => true, 'question_id' => $id]);
         Answer::factory()->create(['correct' => false, 'question_id' => $id]);
         Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Attempt::factory()->count(1)->create();
-        AttemptSummary::factory()->create();
+
+        AttemptSummary::factory()->create(["attempt_id" => Attempt::all()->random()->id, "question_id" => $id]);
     }
 
-    public function test_user_get_attempt_summary()
-    {
-    }
 
     public function test_user_update_attempt_summary()
     {
         $eid = Exercise::all()->random()->id;
         $aid =
             Attempt::all()->random()->id;
-        $data = ["attempt_id" => $aid, "question_id" => Question::all()->random()->id, "answer_id" => Answer::all()->random()->id,  "mark" => 1, "answer" => ''];
+        $data = ["answer" => '', "mark" => 1, "attempt_id" => $aid, "question_id" => Question::all()->random()->id, "answer_id" => Answer::all()->random()->id];
         $this->json('PUT',  'api/v1/exercises/' . $eid . '/attempts' . '/' . $aid . '/attempt-summaries', $data)->assertStatus(200);
     }
 }
