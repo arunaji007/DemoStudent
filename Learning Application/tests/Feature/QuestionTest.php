@@ -42,133 +42,49 @@ class QuestionTest extends TestCase
         Subject::factory()->count(1)->create();
         Chapter::factory()->count(1)->create();
         Exercise::factory()->count(1)->create();
-        Question::factory()->count(2)->create();
+        Question::factory()->count(1)->create([
+            "content" => "Question1",  "type" => 1,
+            "maxMark" => 1,
+            "exercise_id" => 1,
+        ]);
         $id = Question::all()->random()->id;
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => true, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Question::factory()->count(1)->create();
-        $id = Question::all()->random()->id;
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => true, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
+        Answer::factory()->create(['content' => 'A', 'solution' => 's1', 'correct' => 0, 'question_id' => $id]);
+        Answer::factory()->create(['content' => 'B', 'solution' => 's1', 'correct' => 0, 'question_id' => $id]);
+        Answer::factory()->create(['content' => 'C', 'solution' => 's1', 'correct' => 0, 'question_id' => $id]);
+        Answer::factory()->create(['content' => 'D', 'solution' => 's1', 'correct' => 1, 'question_id' => $id]);
+        // Question::factory()->count(1)->create();
+        // $id = Question::all()->random()->id;
+        // Answer::factory()->create(['correct' => false, 'question_id' => $id]);
+        // Answer::factory()->create(['correct' => true, 'question_id' => $id]);
+        // Answer::factory()->create(['correct' => false, 'question_id' => $id]);
+        // Answer::factory()->create(['correct' => false, 'question_id' => $id]);
     }
 
     public function test_user_question_with_pagination()
     {
         $eid = Exercise::all()->random()->id;
-        $c = $this->json('GET', 'api/v1/exercises/' . $eid . '/questions')->assertStatus(200)->assertJsonStructure(["questions" => [
-            "current_page",
+        $c = $this->json('GET', 'api/v1/exercises/' . $eid . '/questions')->assertStatus(200)->assertJson(["questions" => [
+            "current_page" => 1,
             "data" => [
                 [
-                    "id",
-                    "content",
-                    "type",
-                    "maxMark",
-                    "exercise_id",
-                    "created_at",
-                    "updated_at",
-                    "answers" => [
-                        [
-                            "id",
-                            "content",
-                            "correct",
-                            "question_id",
-                            "solution",
-                            "created_at",
-                            "updated_at",
-                        ],
-                    ]
+                    "id" => 1,
+                    "content" => "Question1",
+                    "type" => 1,
+                    "maxMark" => 1,
+                    "exercise_id" => 1,
                 ],
             ],
-            "first_page_url",
-            "from",
-            "last_page",
-            "last_page_url",
-            "links" => [[
-                "url",
-                "label",
-                "active"
-            ]],
-            "next_page_url",
-            "path",
-            "per_page",
-            "prev_page_url",
-            "to",
-            "total",
         ]])->decodeResponseJson();
         Log::info(json_encode($c));
     }
 
-    public function test_user_question_with_known_pagination()
-    {
-        $eid = Exercise::all()->random()->id;
-        $c = $this->json('GET', 'api/v1/exercises/' . $eid . '/questions', ["page" => 2])->assertStatus(200)->assertJsonStructure(["questions" => [
-            "current_page",
-            "data" => [
-                [
-                    "id",
-                    "content",
-                    "type",
-                    "maxMark",
-                    "exercise_id",
-                    "created_at",
-                    "updated_at",
-                    "answers" => [
-                        [
-                            "id",
-                            "content",
-                            "correct",
-                            "question_id",
-                            "solution",
-                            "created_at",
-                            "updated_at",
-                        ],
-                    ]
-                ],
-            ],
-            "first_page_url",
-            "from",
-            "last_page",
-            "last_page_url",
-            "links" => [[
-                "url",
-                "label",
-                "active"
-            ]],
-            "next_page_url",
-            "path",
-            "per_page",
-            "prev_page_url",
-            "to",
-            "total",
-        ]])->decodeResponseJson();
-        Log::info(json_encode($c));
-    }
     public function test_user_question_with_unknown_page()
     {
         $eid = Exercise::all()->random()->id;
 
-        $c = $this->json('GET', 'api/v1/exercises/' . $eid . '/questions', ["page" => 3])->assertStatus(200)->assertJsonStructure(["questions" => [
-            "current_page",
+        $c = $this->json('GET', 'api/v1/exercises/' . $eid . '/questions', ["page" => 2])->assertStatus(200)->assertJson(["questions" => [
+            "current_page" => 2,
             "data" => [],
-            "first_page_url",
-            "from",
-            "last_page",
-            "last_page_url",
-            "links" => [[
-                "url",
-                "label",
-                "active"
-            ]],
-            "next_page_url",
-            "path",
-            "per_page",
-            "prev_page_url",
-            "to",
-            "total",
         ]])->decodeResponseJson();
         Log::info(json_encode($c));
     }

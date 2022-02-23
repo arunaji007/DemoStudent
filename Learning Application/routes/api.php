@@ -56,7 +56,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
         [StudentController::class, 'getContents']
     );
     Route::get(
-        '/v1/contents/{content_id}/review',
+        '/v1/contents/{content_id}/view',
         [StudentController::class, 'viewContent']
     );
     Route::put(

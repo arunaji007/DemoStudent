@@ -85,7 +85,7 @@ class BoardsGradeTest extends TestCase
         Board::factory()->create();
         Board::factory()->create();
         $id = Board::all()->random()->id;
-        $this->json(
+        $this->json(    
             'GET',
             'api/v1/boards/' . $id . '/grades'
         )->assertStatus(200)->assertJsonStructure([]);

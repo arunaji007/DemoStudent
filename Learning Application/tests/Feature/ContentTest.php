@@ -11,6 +11,7 @@ use App\Models\Board;
 use App\Models\Subject;
 use App\Models\Content;
 use App\Models\Chapter;
+use App\Models\Review;
 use JWTAuth;
 use Illuminate\Support\Facades\Log;
 
@@ -35,50 +36,68 @@ class ContentTest extends TestCase
             "board_id" => Board::all()->random()->id,
             "grade_id" => Grade::all()->random()->id,
         ]);
-        Log::info($this->user);
+
+
         $token = JWTAuth::fromUser($this->user);
         $this->withHeader('Authorization', 'Bearer ' . $token);
 
-        Subject::factory()->count(2)->create();
-        Chapter::factory()->count(2)->create();
-        Content::factory()->count(10)->create();
+        Subject::factory()->count(1)->create();
+        Chapter::factory()->count(1)->create();
+        Content::factory()->count(1)->create(['name' => 'trig1', "path" => "www.content"]);
+        Review::factory()->create(['user_id' => ($this->user['id']), "content_id" => Content::all()->random()->id, "notes" => "hi", "like" => 1, "lastRead" => 10, "lastWatched" => "00:20:00"]);
     }
     public function test_user_content_without_query_params()
     {
 
+        Log::info(Content::all());
         $id = Chapter::all()->random()->id;
-        Log::info($id);
-        $this->json('GET', 'api/v1/chapters/' . $id . '/contents')->assertStatus(200)->assertJsonStructure(["contents" => [[
-            "id",
-            "name",
-            "path"
+
+        $this->json('GET', 'api/v1/chapters/' . $id . '/contents')->assertStatus(200)->assertJson(["contents" => [[
+            "id" => 1,
+            "name" => 'trig1',
+            "path" => "www.content",
         ]]]);
     }
     public function test_user_content_with_query_params_limit()
     {
-        $limit = 2;
+        Log::info(Chapter::all());
+        Log::info(Content::all());
         $id = Chapter::all()->random()->id;
         $this->json(
             'GET',
             'api/v1/chapters/' . $id . '/contents',
-            ["limit" => $limit]
-        )->assertStatus(200)->assertJsonStructure(["contents" => [[
-            "id",
-            "name",
-            "path"
+            ["limit" => 1]
+        )->assertStatus(200)->assertJson(["contents" => [[
+            "id" => 1,
+            "name" => 'trig1',
+            "path" => "www.content",
         ]]]);
     }
-    public function test_user_content_with_query_params_chapter()
+    public function test_user_content_with_query_params_content()
     {
         $id = Chapter::all()->random()->id;
         $this->json(
             'GET',
             'api/v1/chapters/' . $id . '/contents',
-            ["chapter" => 's']
-        )->assertStatus(200)->assertJsonStructure(["contents" => [[
-            "id",
-            "name",
-            "path"
+            ["chapter" => 't
+            .']
+        )->assertStatus(200)->assertJson(["contents" => [[
+            "id" => 1,
+            "name" => 'trig1',
+            "path" => "www.content",
+        ]]]);
+    }
+    public function test_user_contents()
+    {
+        Log::info(Content::all());
+        Log::info(Review::all());
+        $this->json(
+            'GET',
+            '/api/v1/users/myself/contents'
+        )->assertStatus(200)->assertJson(["contents" => [[
+            "id" => 1,
+            "name" => "trig1",
+            "path" => "www.content",
         ]]]);
     }
 }

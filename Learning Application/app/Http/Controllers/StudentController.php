@@ -127,8 +127,8 @@ class StudentController extends Controller
 
     public function getSubjects(Request $request)
     {
-        $offset = $request->has('offset') ? $request->get('offset') : 1;
-        $limit = $request->has('limit') ? $request->get('limit') : 4;
+        $offset = $request->has('offset') ? $request->get('offset') : 0;
+        $limit = $request->has('limit') ? $request->get('limit') : 10;
         if (!$request->subject) {
             $subjects = StudentController::subjecthelper($limit, $offset);
             Log::info(json_encode($subjects));
@@ -152,21 +152,21 @@ class StudentController extends Controller
             return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
 
-        $offset = $request->has('offset') ? $request->get('offset') : 1;
-        $limit = $request->has('limit') ? $request->get('limit') : 4;
+        $offset = $request->has('offset') ? $request->get('offset') : 0;
+        $limit = $request->has('limit') ? $request->get('limit') : 10;
         if (!$request->chapter) {
             $chapters = Chapter::where('subject_id', $validator->validated('subject_id'))->limit($limit)->offset($offset)->get();
             return response(['chapters' => $chapters], status: Response::HTTP_OK);
         }
 
         $chapters =
-            Chapter::where('subject_id', $validator->validated('subject_id'))->where('name', 'LIKE', '%' . $request->chapter . '%')->limit($limit)->offset($offset)->get();
+            Chapter::where('subject_id', $validator->validated('subject_id'))->where('name', 'LIKE', ('%' . $request->chapter . '%'))->limit($limit)->offset($offset)->get();
         return response(['chapters' => $chapters], status: Response::HTTP_OK);
     }
 
     public function getUserContents(Request $request)
     {
-        $offset = $request->has('offset') ? $request->get('offset') : 1;
+        $offset = $request->has('offset') ? $request->get('offset') : 0;
         $limit = $request->has('limit') ? $request->get('limit') : 10;
 
         $contents = Review::join('contents', 'reviews.content_id', 'contents.id')->where('user_id', $this->user['id'])->orderBy('reviews.updated_at', 'desc')->limit($limit)->offset($offset)->get(['contents.id', 'contents.name', 'path', 'reviews.updated_at']);
@@ -187,8 +187,8 @@ class StudentController extends Controller
             return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
 
-        $offset = $request->has('offset') ? $request->get('offset') : 1;
-        $limit = $request->has('limit') ? $request->get('limit') : 4;
+        $offset = $request->has('offset') ? $request->get('offset') : 0;
+        $limit = $request->has('limit') ? $request->get('limit') : 10;
 
         if (!$request->content) { //query param
             $contents = Content::where('chapter_id', $validator->validated('chapter_id'))->limit($limit)->offset($offset)->get(['id', 'name', 'path']);

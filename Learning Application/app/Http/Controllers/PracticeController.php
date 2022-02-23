@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Models\Attempt;
 use App\Models\Question;
 use App\Models\Answer;
-use App\Models\AttemptSummary;  
+use App\Models\AttemptSummary;
 use App\Models\Subject;
 use App\Models\Chapter;
 use App\Models\Review;
@@ -43,8 +43,8 @@ class PracticeController extends Controller
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()], status: Response::HTTP_BAD_REQUEST);
         }
-        $offset = $request->has('offset') ? $request->get('offset') : 1;
-        $limit = $request->has('limit') ? $request->get('limit') : 4;
+        $offset = $request->has('offset') ? $request->get('offset') : 0;
+        $limit = $request->has('limit') ? $request->get('limit') : 10;
         if (!$request->exercise) {
             $exercises = Exercise::where('chapter_id', $validator->validated('chapter_id'))->limit($limit)->offset($offset)->get(['id', 'name', 'duration', 'noOfQuestions']);
             return response(['exercises' => $exercises], status: Response::HTTP_OK);
@@ -114,7 +114,7 @@ class PracticeController extends Controller
             "duration" => '00:00:00',
         ];
         $attempt = Attempt::create($data);
-        return response(["attempt" => $attempt], status: Response::HTTP_OK);
+        return response(["attempt" => $attempt], status: Response::HTTP_CREATED);
     }
 
     public function deleteAttempt(Request $request)
@@ -160,9 +160,7 @@ class PracticeController extends Controller
                 DB::raw('MAX(score) as high_score'),
                 DB::raw('COUNT(exercise_id) as attempt_count')
             ]);
-        if ($attempt) {
-            return response(["attempts" => $attempt], status: Response::HTTP_CONFLICT);
-        }
+        return response(["attempt" => $attempt], status: Response::HTTP_OK);
     }
 
     public function updateSummary(Request $request)

@@ -20,8 +20,7 @@ class ExerciseFactory extends Factory
             'name' => $this->faker->word(5),
             'duration' => $this->faker->time('H:i:s', "01:00:00"),
             'noOfQuestions' => $this->faker->numberBetween(30, 50),
-            'chapter_id' => Chapter::all()->random()->id,
-
+            "chapter_id" => Chapter::all()->random()->id,
         ];
     }
 }

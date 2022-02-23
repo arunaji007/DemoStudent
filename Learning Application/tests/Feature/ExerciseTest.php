@@ -40,18 +40,19 @@ class ExerciseTest extends TestCase
         Grade::factory()->count(1)->create();
         Subject::factory()->count(1)->create();
         Chapter::factory()->count(1)->create();
-        Exercise::factory()->count(10)->create();
+        Exercise::factory()->count(1)->create(["name" => 'trig1', "duration" => "02:00:00", "noOfQuestions" => 40, "chapter_id" => Chapter::all()->random()->id]);
     }
     public function test_user_exercises_without_query_params()
 
     {
+        Log::info(Chapter::all());
         $id = Chapter::all()->random()->id;
-        $this->json('GET', 'api/v1/chapters/' . $id . '/exercises')->assertStatus(200)->assertJsonStructure(['exercises' => [
+        $this->json('GET', 'api/v1/chapters/' . $id . '/exercises')->assertStatus(200)->assertJson(['exercises' => [
             [
-                'id',
-                'name',
-                'duration',
-                'noOfQuestions'
+                'id' => 1,
+                'name' => "trig1",
+                'duration' => "02:00:00",
+                'noOfQuestions' => 40,
             ]
         ]]);
     }

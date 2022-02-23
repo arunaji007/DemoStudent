@@ -36,7 +36,7 @@ class ChapterTest extends TestCase
         Board::factory()->count(1)->create();
         Grade::factory()->count(1)->create();
         Subject::factory()->count(1)->create();
-        Chapter::factory()->count(10)->create();
+        Chapter::factory()->count(1)->create(["name" => "trig", "subject_id" => Subject::all()->random()->id, "noOfExercises" => 2]);
     }
     public function test_user_chapter_without_query_params()
     {
@@ -44,52 +44,51 @@ class ChapterTest extends TestCase
         $id = Subject::all()->random()->id;
         Log::info($id);
         $this->json('GET', 'api/v1/subjects/' . $id . '/chapters')->assertStatus(200)
-            ->assertJsonStructure(['chapters' =>
+            ->assertJson(['chapters' =>
             [
                 [
-
-                    'id',
-                    'name',
-                    'subject_id',
-                    'noOfExercises',
-
+                    'id' => 1,
+                    'name' => "trig",
+                    'subject_id' => 1,
+                    'noOfExercises' => 2,
                 ]
             ]]);
     }
     public function test_user_chapter_with_query_params_limit()
     {
-        $limit = 2;
+        $limit = 1;
         $id = Subject::all()->random()->id;
         $this->json(
             'GET',
             'api/v1/subjects/' . $id . '/chapters',
             ["limit" => $limit]
         )->assertStatus(200)
-            ->assertJsonStructure(['chapters' =>
+            ->assertJson(['chapters' =>
             [
                 [
-                    'id',
-                    'name',
-                    'subject_id',
-                    'noOfExercises',
+                    'id' => 2,
+                    'name' => "trig",
+                    'subject_id' => 2,
+                    'noOfExercises' => 2,
                 ]
             ]]);
     }
     public function test_user_chapter_with_query_params_chapter()
     {
+        Log::info(Chapter::all());
         $id = Subject::all()->random()->id;
         $this->json(
             'GET',
             'api/v1/subjects/' . $id . '/chapters',
-            ["chapter" => 's']
+            ["chapter" => 't']
         )->assertStatus(200)
-            ->assertJsonStructure(['chapters' =>
+            ->assertJson(['chapters' =>
             [
                 [
-                    'id',
-                    'name',
-                    'subject_id',
-                    'noOfExercises',
+                    'id' => 3,
+                    'name' => "trig",
+                    'subject_id' => 3,
+                    'noOfExercises' => 2,
                 ]
             ]]);
     }

@@ -19,7 +19,7 @@ class ChapterFactory extends Factory
             //
             'name' => $this->faker->word(5),
             'subject_id' => Subject::all()->random()->id,
-            'noOfExercises' => $this->faker->numberBetween(1, 10)
+            'noOfExercises' => $this->faker->numberBetween(1, 10),
         ];
     }
 }

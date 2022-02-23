@@ -378,18 +378,7 @@ ouput:{
 
 ##delete attempt
 
-  public function test_user_contents()
-    {
-        $this->json(
-            'GET',
-            '/api/v1/users/myself/contents'
-        )->assertStatus(200)->assertJsonStructure(["contents" => [[
-            "id",
-            "name",
-            "path",
-            "updated_at"
-        ]]]);
-    }
+  
 
     ->assertJsonStructure(["questions"=>[ 
         "current_page"

@@ -45,21 +45,20 @@ class AttemptSummaryTest extends TestCase
         Subject::factory()->count(1)->create();
         Chapter::factory()->count(1)->create();
         Exercise::factory()->count(1)->create();
-        Question::factory()->count(1)->create();
+        Question::factory()->count(1)->create([
+            "content" => "Question1",  "type" => 1,
+            "maxMark" => 1,
+            "exercise_id" => 1,
+        ]);
         $id = Question::all()->random()->id;
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => true, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Attempt::factory()->count(1)->create();
-        AttemptSummary::factory()->create(["attempt_id" => Attempt::all()->random()->id, "question_id" => $id]);
-        Question::factory()->count(1)->create();
-        $id = Question::all()->random()->id;
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => true, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-        Answer::factory()->create(['correct' => false, 'question_id' => $id]);
-
+        Answer::factory()->create(['content' => 'A', 'solution' => 's1', 'correct' => 0, 'question_id' => $id]);
+        Answer::factory()->create(['content' => 'B', 'solution' => 's1', 'correct' => 0, 'question_id' => $id]);
+        Answer::factory()->create(['content' => 'C', 'solution' => 's1', 'correct' => 0, 'question_id' => $id]);
+        Answer::factory()->create(['content' => 'D', 'solution' => 's1', 'correct' => 1, 'question_id' => $id]);
+        Attempt::factory()->create([
+            "user_id" => $this->user['id'],
+            "exercise_id" => Exercise::all()->random()->id,
+        ]);
         AttemptSummary::factory()->create(["attempt_id" => Attempt::all()->random()->id, "question_id" => $id]);
     }
 

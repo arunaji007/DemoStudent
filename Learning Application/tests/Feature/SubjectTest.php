@@ -36,62 +36,57 @@ class SubjectTest extends TestCase
         $token = JWTAuth::fromUser($this->user);
         $this->withHeader('Authorization', 'Bearer ' . $token);
 
-        Subject::factory()->count(10)->create();
+        Subject::factory()->count(1)->create(['name' => "maths", "grade_id" => Grade::all()->random()->id]);
+        Subject::factory()->count(1)->create(['name' => "science", "grade_id" => Grade::all()->random()->id]);
+
     }
     public function test_user_subject_without_query_params()
     {
-        #    Log::info(json_encode(Subject::all()));
-        $c = $this->json(
+
+        $this->json(
             'GET',
             'api/v1/users/myself/subjects'
         )->assertStatus(200)
-            ->assertJsonStructure(["subjects" => [[
-                "id",
-                "name",
-                "grade_id",
-                "created_at",
-                "updated_at",
-                "contents_count",
-                "subjects_percentage",
-                "exercise_percentage",
+            ->assertJson(["subjects" => [[
+                "id" => 2,
+                "name" => 'science',
+                "grade_id" => 1,
+                "contents_count" => 0,
+                "subjects_percentage" => 0,
+                "exercise_percentage" => 0,
             ],],]);
     }
 
     public function test_user_subject_with_query_params_limit()
     {
-        $limit = 2;
+        $limit = 1;
         $this->json(
             'GET',
             'api/v1/users/myself/subjects',
             ["limit" => $limit],
-        )->assertStatus(200)->assertJsonStructure(["subjects" => [[
-            "id",
-            "name",
-            "grade_id",
-            "created_at",
-            "updated_at",
-            "contents_count",
-            "subjects_percentage",
-            "exercise_percentage",
-        ]]]);
+        )->assertStatus(200)->assertJson(["subjects" => [[
+            "id" => 2,
+            "name" => 'science',
+            "grade_id" => 1,
+            "contents_count" => 0,
+            "subjects_percentage" => 0,
+            "exercise_percentage" => 0,
+        ],],]);
     }
 
     public function test_user_subject_with_query_param_subject()
     {
-        Subject::factory()->create(['name' => "science"]);
         $this->json(
             'GET',
             'api/v1/users/myself/subjects',
             ["chapter" => 's'],
-        )->assertStatus(200)->assertJsonStructure(["subjects" => [[
-            "id",
-            "name",
-            "grade_id",
-            "created_at",
-            "updated_at",
-            "contents_count",
-            "subjects_percentage",
-            "exercise_percentage",
-        ]]]);
+        )->assertStatus(200)->assertJson(["subjects" => [[
+            "id" => 2,
+            "name" => 'science',
+            "grade_id" => 1,
+            "contents_count" => 0,
+            "subjects_percentage" => 0,
+            "exercise_percentage" => 0,
+        ],],]);
     }
 }
